@@ -95,10 +95,8 @@ while station.is_alive() and station.day <= 10:
         print("4. Ремкомплект 🛠️")
         print("5. Прийняти удар 🛸")
 
-        try:
-            choice = int(input("Ваш вибір⚔️: "))
-        except:
-            choice = 5
+        choice = int(input("Ваш вибір: "))
+
 
 
         if 1 <= choice <= 3:
