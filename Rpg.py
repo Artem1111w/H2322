@@ -282,7 +282,7 @@ while player.is_alive():
                 print('Попав💪')
                 damage = random.randint(select_skill['min_dmg'], select_skill['max_dmg'])
                 print(f'Ворог отривам {damage} урону!🩸')
-                enemy.hp >= damage
+                enemy.hp -= damage
             else:
                 print('Ворог ухильнувся💨')
         elif player_choice == healt_index:
