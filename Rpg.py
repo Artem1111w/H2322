@@ -1,5 +1,7 @@
 import random
+from calendar import day_name
 from encodings import palmos
+from select import select
 
 class Creature:
     def __init__(self, name, hp):
@@ -9,7 +11,6 @@ class Creature:
 
     def is_alive(self):
         return self.hp > 0
-
 
 class Player(Creature):
     def __init__(self, name, hp=100):
@@ -27,8 +28,8 @@ class Player(Creature):
             },
             {
                 'name': 'потужний удар',
-                'min_dmg': 40,
-                'max_dmg': 25,
+                'min_dmg': 25,
+                'max_dmg': 40,
                 'chance': 0.4
             },
             {
@@ -102,6 +103,53 @@ class Monster(Creature):
 
         self.power = int(monster['damage'] * multiplier)
 
+class Event:
+    def __init__(self, name,  description):
+        self.name = name
+        self.description = description
+
+    def trigger(self, player):
+        print('-----------------------')
+        print(f'⚔️Подія: {self.name}. {self.description}⚔️')
+
+
+class TrainerEvent(Event):
+    def __init__(self, name, description):
+        super().__init__('Тренер  фехтування⚔️',
+                         'Ви зурстріли тренера, що може навчити вас новому!💪')
+
+        self.skills = [
+            {
+                'name': 'Гарантований удар',
+                'min_dmg': 5,
+                'max_dmg': 10,
+                'chance': 1.0
+            },
+            {
+                'name': 'Удар з ноги',
+                'min_dmg': 20,
+                'max_dmg': 30,
+                'chance': 0.6
+            },
+            {
+                'name': 'Удар Смерті',
+                'min_dmg': 80,
+                'max_dmg': 120,
+                'chance': 0.05
+            },
+        ]
+
+    def trigger(self, player):
+        super().trigger(player)
+
+        print('Навички на вибір:')
+        for index, skill in enumerate(self.skills):
+            print(f'{index + 1}. {skill['name']} ({skill['min_dmg']}|{skill['max_dmg']}) Шанс: {skill['chance']}')
+
+        player_choice = int(input('Вам вибір:'))
+        new_skill = self.skills[player_choice - 1]
+        player.skills.append(new_skill)
+        print('Навички отримано!💪')
 
 #======= Гра
 print('⚔️Вітаємо у грі "OOP-Battles"⚔️')
@@ -117,20 +165,52 @@ while player.is_alive():
     print(f'Його сила: {enemy.power}💪')
 
     while enemy.is_alive() and player.is_alive():
-        print(f"Здоров'я: {player.hp}❤️")
-
+        print('===================================')
+        print(f"{player.name} - {player.hp}❤️ | {enemy.name} - {enemy.hp}❤️")
         print('Що будеш робити?')
 
         for index, skill in enumerate(player.skills):
             print(f'{index + 1}. {skill['name']} ({skill['min_dmg']}|{skill['max_dmg']}) Шанс: {skill['chance']}')
 
-        print('4. Полікуватись❤️')
-        print('5. Пропустити🦥')
+        healt_index = index + 2
+        relax_index = index + 3
+
+        print(f'{healt_index} Полікуватись❤️')
+        print(f'{relax_index} Пропустити🦥')
 
         player_choice = int(input('Ваш вибір⚔️:'))
 
-        #перевірка вибору атаки або лікування
-        #контр-атака ворога (якщо живий )
+        if 1 <+ player_choice <= len(player.skills):
+            select_skill = player.skills[player_choice - 1]
+
+            if random.random() <= select_skill['chance']:
+                print('Попав💪')
+                damage = random.randint(select_skill['min_dmg'], select_skill['max_dmg'])
+                print(f'Ворог отривам {damage} урону!🩸')
+                enemy.hp >= damage
+            else:
+                print('Ворог ухильнувся💨')
+        elif player_choice == healt_index:
+            player.heal()
+        elif player_choice == relax_index:
+            print('Ви вирішили відпочити посеред бою🧘')
+            player.hp += 10
+
+        if enemy.is_alive():
+            damage = random.randint(int(enemy.power * 0.8), int(enemy.power * 1.2))
+            print(f"Здоров'я ворога: {enemy.hp}❤️")
+            print(f'Ворог Атакає!👹 {damage} Наніс урону!')
+            player.hp -= damage
+
+    if player.is_alive():
+        print('Монстра переможено!💀⚔️')
+        gain_xp = random.randint(40 , 70)
+        player.gain_exp(gain_xp)
+        player.potions += 1
+        print(f'Ти отривам {gain_xp} досвіду!💥 Та одне зілля!')
+
+
+
 
 
 print('⚔️Гру Завершино!⚔️')
