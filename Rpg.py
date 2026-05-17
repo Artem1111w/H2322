@@ -18,12 +18,13 @@ class Player(Creature):
         self.level = 1
         self.exp = 0
         self.potions = 3
+        self.money = 10
 
         self.skills = [
             {
                 'name': 'Швидкій удар',
-                'min_dmg': 10,
-                'max_dmg': 15,
+                'min_dmg': 1000,
+                'max_dmg': 1500,
                 'chance': 0.9
             },
             {
@@ -46,6 +47,7 @@ class Player(Creature):
             print(f'Ти вилікувався на {amount} HP!❤️')
 
             self.hp += amount
+            self.potions -= 1
 
             if self.hp > self.max_hp:
                 self.hp = self.max_hp
@@ -112,9 +114,71 @@ class Event:
         print('-----------------------')
         print(f'⚔️Подія: {self.name}. {self.description}⚔️')
 
+class Shop:
+    def __init__(self, shop_name):
+        self.shop_name = shop_name
+
+        self.product = [
+            {
+                'name': 'Щит',
+                'price': 150,
+                'type': 'shield',
+            },
+            {
+                'name': 'Зілля',
+                'price': 100,
+                'type': 'potions',
+            },
+        ]
+
+
+    def start(self):
+        while True:
+            print(f"Вітаємо в магазині {self.shop_name}!")
+            print(f"Ваш баланс: {player.money} золота 💰")
+            print("Доступні товари:")
+            for index, item in enumerate(self.product):
+                print(f"{index + 1}. {item['name']} | {item['price']} золота")
+                print(f"{len(self.product) + 1}. Вийти з магазину")
+
+            try:
+                choice = int(input("Що бажаєте придбати? ")) - 1
+
+                if choice == len(self.product):
+                    print("Дякуємо за візит!")
+                    return
+
+                item = self.product[choice]
+
+                if player.money >= item['price']:
+                    player.money -= item['price']
+                    print(f" Ви купили {item['name']}!")
+
+                    if item['type'] == 'potions':
+                        player.potions += 1
+                    elif item['type'] == 'shield':
+                        player.max_hp += 10
+                        player.hp += 10
+
+                else:
+                    print("У вас недостатньо золота!")
+            except ValueError:
+                print("Невірний вибір")
+                continue
+
+
+class ShopEvent(Event):
+    def __init__(self):
+        super().__init__('Магазин', 'Можна купувати зілля,щит')  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        self.shop = Shop('Магазин чогось!')
+
+    def trigger(self, player):
+        super().trigger(player)
+        self.shop.start()
+
 
 class TrainerEvent(Event):
-    def __init__(self, name, description):
+    def __init__(self):
         super().__init__('Тренер  фехтування⚔️',
                          'Ви зурстріли тренера, що може навчити вас новому!💪')
 
@@ -172,11 +236,15 @@ class UpgradeEvent(Event):
 
 
 
+
+
+
 #======= Гра
 print('⚔️Вітаємо у грі "OOP-Battles"⚔️')
 
 player_name = input("🤴Введіть ім'я свого героя:👑")
 player = Player(player_name)
+events = [TrainerEvent(), UpgradeEvent(), ShopEvent()]
 print(f'{player.name} починає пригоди! 🏇')
 
 while player.is_alive():
@@ -195,13 +263,19 @@ while player.is_alive():
 
         healt_index = index + 2
         relax_index = index + 3
+        shop_index = index + 4
 
         print(f'{healt_index} Полікуватись❤️')
         print(f'{relax_index} Пропустити🦥')
+        print(f'{shop_index} Магазин🏪')
 
-        player_choice = int(input('Ваш вибір⚔️:'))
+        try:
+            player_choice = int(input('Ваш вибір⚔️:'))
+        except ValueError:
+            print('Ви ввели не число')
+            continue
 
-        if 1 <+ player_choice <= len(player.skills):
+        if 1 <= player_choice <= len(player.skills):
             select_skill = player.skills[player_choice - 1]
 
             if random.random() <= select_skill['chance']:
@@ -228,7 +302,13 @@ while player.is_alive():
         gain_xp = random.randint(40 , 70)
         player.gain_exp(gain_xp)
         player.potions += 1
-        print(f'Ти отривам {gain_xp} досвіду!💥 Та одне зілля!')
+        gold = random.randint(10, 30)
+        player.money += gold
+        print(f'Ти отривам {gain_xp} досвіду!💥, та {gold} золота, та одне зілля!')
+
+        if random.random() <= 0.5:
+            ev = random.choice(events)
+            ev.trigger(player)
 
 
 
