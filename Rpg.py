@@ -151,6 +151,27 @@ class TrainerEvent(Event):
         player.skills.append(new_skill)
         print('Навички отримано!💪')
 
+
+class UpgradeEvent(Event):
+    def __init__(self):
+        super().__init__('Ви знайшли Точильний камінь💎',
+                         'Ви знайши камінь, що допоможе покращити одни з скілів!')
+
+
+    def trigger(self, player):
+        super().trigger(player)
+
+        print('Навички на вибір:')
+        for index, skill in enumerate(player.skills):
+            print(f'{index + 1}. {skill['name']} ({skill['min_dmg']}|{skill['max_dmg']}) Шанс: {skill['chance']}')
+
+        player_choice = int(input('Вам вибір:'))
+        upgrade_skill = player.skills[player_choice - 1]
+        upgrade_skill['chance'] += 0.05
+        print(f'Тепер навик {upgrade_skill['name']} має шанс: {upgrade_skill['chance']}')
+
+
+
 #======= Гра
 print('⚔️Вітаємо у грі "OOP-Battles"⚔️')
 
