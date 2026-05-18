@@ -18,7 +18,7 @@ class Player(Creature):
         self.level = 1
         self.exp = 0
         self.potions = 3
-        self.money = 10
+        self.money = 10000
 
         self.skills = [
             {
@@ -71,10 +71,45 @@ class Player(Creature):
         print('НОВИЙ РІВЕНЬ!🍾')
         print(f'Твій рівень тепер: {self.level}')
         print(f"Твоє здоров'я: {self.max_hp}")
+        print(f"УВАГА! На рівні {self.level} на тебе чекає бос!⚠️")
+        boss = Boss(self.level)
+
+        while boss.is_alive() and self.is_alive():
+            print(f"БИТВА З БОСОМ: {boss.name}")
+            print(f"{self.name}: {self.hp}❤️  |  {boss.name}: {boss.hp}❤️")
+
+            for index, skill in enumerate(self.skills):
+                print(f"{index + 1}. {skill['name']} ({skill['min_dmg']}-{skill['max_dmg']})")
+
+            try:
+                choice = int(input("Твій хід⚔️: "))
+                if 1 <= choice <= len(self.skills):
+                    skill = self.skills[choice - 1]
+                    if random.random() <= skill['chance']:
+                        dmg = random.randint(skill['min_dmg'], skill['max_dmg'])
+                        boss.hp -= dmg
+                        print(f"💥 Ти влучив! Урону нанесно: {dmg}")
+                    else:
+                        print("💨 Промах!")
+
+
+                if boss.is_alive():
+                    boss_dmg = random.randint(int(boss.power * 0.8), int(boss.power * 1.2))
+                    self.hp -= boss_dmg
+                    print(f"👹 {boss.name} вдарив тебе на {boss_dmg} урону!")
+
+            except ValueError:
+                print("Введіть число!")
+
+        if self.is_alive():
+            print(f"🏆Ти подолав боса {boss.name}!")
+            print("Твій шлях продовжується")
+        else:
+            print(f"💀 Босс {boss.name} виявився сильнішим")
 
 
 class Monster(Creature):
-    def __init__(self, palyer_level):
+    def __init__(self, player_level):
         monster_data = [
             {
                 'name': 'Гоблін',
@@ -99,11 +134,40 @@ class Monster(Creature):
         ]
 
         monster = random.choice(monster_data)
-        multiplier = 1 + (palyer_level - 1) * 0.2
+        multiplier = 1 + (player_level - 1) * 0.2
 
         super().__init__(monster['name'], int(monster['hp'] * multiplier))
 
         self.power = int(monster['damage'] * multiplier)
+
+class Boss(Monster):
+    def __init__(self, player_level):
+        boss_data = [
+            {
+                'name': 'Зомбі',
+                'hp': 250,
+                'damage': 50
+            },
+            {
+                'name': 'Орк-БОСС',
+                'hp': 350,
+                'damage': 65
+            },
+            {
+                'name': 'Король-БОСС',
+                'hp': 450,
+                'damage': 80
+            }
+        ]
+
+        boss = random.choice(boss_data)
+        multiplier = 1 + (player_level - 2) * 0.3
+
+        Creature.__init__(self, boss['name'], int(boss['hp'] * multiplier))
+
+        self.power = int(boss['damage'] * multiplier)
+
+
 
 class Event:
     def __init__(self, name,  description):
@@ -167,9 +231,10 @@ class Shop:
                 continue
 
 
+
 class ShopEvent(Event):
     def __init__(self):
-        super().__init__('Магазин', 'Можна купувати зілля,щит')  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        super().__init__('Магазин', 'Можна купувати зілля,щит')
         self.shop = Shop('Магазин чогось!')
 
     def trigger(self, player):
@@ -290,6 +355,9 @@ while player.is_alive():
         elif player_choice == relax_index:
             print('Ви вирішили відпочити посеред бою🧘')
             player.hp += 10
+        elif player_choice == shop_index:
+            shop = Shop("Лавка")
+            shop.start()
 
         if enemy.is_alive():
             damage = random.randint(int(enemy.power * 0.8), int(enemy.power * 1.2))
