@@ -2,7 +2,7 @@ import socket
 import threading
 import tkinter as tk
 from tkinter import scrolledtext
-
+#10.0.3.224
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('10.0.3.35',5000))
 
@@ -23,6 +23,12 @@ def send_msg(event=None):
     if text:
         client.send(text.encode('utf-8'))
         msg_entry.delete(0, tk.END)
+        chat_area.config(state=tk.NORMAL)
+        chat_area.insert(tk.END, text + "\n")
+        chat_area.yview(tk.END)
+        chat_area.config(state=tk.DISABLED)
+
+
 
 send_btn = tk.Button(
     root,
@@ -33,7 +39,7 @@ send_btn = tk.Button(
 )
 send_btn.pack(side=tk.RIGHT, padx= 10,pady= 10)
 
-#root.bind("",send_msg())
+#root.bind("Enter",send_msg())
 
 
 def lister_to_server(client):
