@@ -4,7 +4,7 @@ import socket
 
 receiver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-receiver.bind(('0.0.0.0',8080))
+receiver.bind(('localhost',5000))
 
 receiver.listen(1)
 print("ресівер слюхає на порту 5000")
