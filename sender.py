@@ -5,7 +5,7 @@ from tkinter import scrolledtext
 #10.0.3.224
 #10.0.3.35
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('10.0.3.35',5000))
+client.connect(('10.0.3.224',5000))
 
 
 root = tk.Tk()
@@ -25,7 +25,7 @@ def send_msg(event=None):
         client.send(text.encode('utf-8'))
         msg_entry.delete(0, tk.END)
         chat_area.config(state=tk.NORMAL)
-        chat_area.insert(tk.END, text + "\n")
+        chat_area.insert(tk.END, " Ви: " + text + "\n")
         chat_area.yview(tk.END)
         chat_area.config(state=tk.DISABLED)
 
