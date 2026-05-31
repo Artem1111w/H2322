@@ -13,12 +13,8 @@ for _ in range(15):
 
         soup_list = soup.find_all('div', {'class': 'value index-page'})
 
-        #usd = soup_list[2].text
-        #euro = soup_list[2].text
-
         print(f'Курс Долара: {soup_list[3].text.strip()}')
         print(f'Курс Евро: {soup_list[2].text.strip()}')
-        #result.append(usd)
         time.sleep(10)
 
 print(*result, sep='\n')
