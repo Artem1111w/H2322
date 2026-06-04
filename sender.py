@@ -27,7 +27,7 @@ def send_msg(event=None):
         client.send(text.encode('utf-8'))
         msg_entry.delete(0, tk.END)
         chat_area.config(state=tk.NORMAL)
-        chat_area.insert(tk.END, " Ви: " + text + "\n")
+        chat_area.insert(tk.END, " Ви: " + text + "/n")
         chat_area.yview(tk.END)
         chat_area.config(state=tk.DISABLED)
 
@@ -54,7 +54,7 @@ def lister_to_server(client):
             msg = data.decode('utf-8')
 
             chat_area.config(state=tk.NORMAL)
-            chat_area.insert(tk.END, msg + "\n")
+            chat_area.insert(tk.END, msg + "/n")
             chat_area.yview(tk.END)
             chat_area.config(state=tk.DISABLED)
 

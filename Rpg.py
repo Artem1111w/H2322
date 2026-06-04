@@ -2,7 +2,7 @@ import random
 from calendar import day_name
 from encodings import palmos
 from select import select
-
+#
 class Creature:
     def __init__(self, name, hp):
         self.name = name
