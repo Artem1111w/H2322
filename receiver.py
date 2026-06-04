@@ -91,7 +91,11 @@ server.bind(('0.0.0.0', 5000))
 server.listen(10)  # Готові прийняти до 10 студентів
 
 print("Сервер запущено! Чекаємо студентів...")
-print("Команди: \n //kick [port] \n //mute [port] [time] \n //unmute [port]")
+print("Команди:"
+      "\n //kick [port]"
+      "\n //mute [port] [time]"
+      "\n //unmute [port]"
+      )
 
 # Запускаємо процес прийняття підключень у фоновому потоці
 accept_thread = threading.Thread(target=accept_connections, args=(server,), daemon=True)
