@@ -6,7 +6,7 @@ from tkinter import scrolledtext
 # 10.0.3.224
 # 10.0.3.35
 # 192.168.1.72
-#10.0.3.108
+# 10.0.3.108
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(('localhost', 5000))
 
@@ -31,6 +31,12 @@ def send_msg(event=None):
     text = msg_entry.get()
     if text:
 
+
+        if text.strip() == "//exit":
+            client.close()
+            root.destroy()
+
+
         if not history or history[-1] != text:
             history.append(text)
         history_index = len(history)
@@ -38,7 +44,7 @@ def send_msg(event=None):
         client.send(text.encode('utf-8'))
         msg_entry.delete(0, tk.END)
         chat_area.config(state=tk.NORMAL)
-        chat_area.insert(tk.END, " Ви: " + text + "\n")
+        chat_area.insert(tk.END, f" Ви: " + text + "")
         chat_area.yview(tk.END)
         chat_area.config(state=tk.DISABLED)
 
@@ -65,13 +71,12 @@ def history_down(event):
     return "break"
 
 
-send_btn = tk.Button(root,text="Send",command=send_msg,bg="green",font=("Arial", 10))
+send_btn = tk.Button(root, text="Send", command=send_msg, bg="green", font=("Arial", 10))
 send_btn.pack(side=tk.RIGHT, padx=10, pady=10)
 
 msg_entry.bind("<Return>", send_msg)
 msg_entry.bind("<Up>", history_up)
 msg_entry.bind("<Down>", history_down)
-
 
 def lister_to_server(client):
     while True:
@@ -80,6 +85,10 @@ def lister_to_server(client):
             if not data:
                 break
             msg = data.decode('utf-8')
+
+            if msg.strip() == "//exit":
+                root.destroy()
+                break
 
             chat_area.config(state=tk.NORMAL)
             chat_area.insert(tk.END, msg + "\n")

@@ -117,6 +117,17 @@ def send_message(event=None):
     if not parts:
         return
 
+    if parts[0] == "//help":
+        help_text = (
+            "[СЕРВЕР]: Доступні команди:"
+            "\n  //help - показати це повідомлення"
+            "\n  //kick [port] - вигнати студента з чату"
+            "\n  //mute [port] [time] - дати мут на к-сть хвилин"
+            "\n  //unmute [port] - зняти мут"
+        )
+        log_message(help_text)
+
+
     if parts[0] == "//kick" and len(parts) > 1:
         target_port = parts[1]
         kicked = False
@@ -125,6 +136,7 @@ def send_message(event=None):
             if str(c_addr[1]) == target_port:
                 try:
                     c_conn.send("\n[СЕРВЕР]: Вас було виключено викладачем.\n".encode('utf-8'))
+                    c_conn.send("//exit").encode('utf-8')
                 except:
                     pass
 
@@ -155,6 +167,14 @@ def send_message(event=None):
                     c_conn.send("\n[СЕРВЕР]: З вас знято МУТ. Ви можете писати.\n".encode('utf-8'))
                     log_message(f"МУТ знято для порта {target_port}")
                 break
+
+    elif parts[0] == "//online":
+        count = len(clients)
+        log_message(f"[СЕРВЕР]: Зараз в онлайн {count} студентів.")
+        if count > 0:
+
+            ports_list = ", ".join([str(c_addr[1]) for _, c_addr in clients])
+            log_message(f"Список портів: {ports_list}")
 
     else:
         # Звичайне повідомлення від викладача
@@ -217,8 +237,8 @@ log_message("Команди:"
             "\n //kick [port]"
             "\n //mute [port] [time]"
             "\n //unmute [port]"
-            "\n //admin [port]"
-            "\n online [port]"
+            "\n //online"
+            "\n //help"
             )
 
 # Запускаємо процес прийняття підключень у фоновому потоці
