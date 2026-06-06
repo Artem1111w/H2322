@@ -7,7 +7,7 @@ from tkinter import scrolledtext
 #10.0.3.35
 #192.168.1.72
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(('192.168.1.72',5000))
+client.connect(('localhost',5000))
 
 
 root = tk.Tk()
