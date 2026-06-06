@@ -136,7 +136,6 @@ def send_message(event=None):
             if str(c_addr[1]) == target_port:
                 try:
                     c_conn.send("\n[СЕРВЕР]: Вас було виключено викладачем.\n".encode('utf-8'))
-                    c_conn.send("//exit").encode('utf-8')
                 except:
                     pass
 

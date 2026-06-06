@@ -28,25 +28,29 @@ history_index = -1
 
 def send_msg(event=None):
     global history_index
-    text = msg_entry.get()
-    if text:
+
+    try:
+        text = msg_entry.get()
+        if text:
 
 
-        if text.strip() == "//exit":
-            client.close()
-            root.destroy()
+            if text.strip() == "//exit":
+                client.close()
+                root.destroy()
 
 
-        if not history or history[-1] != text:
-            history.append(text)
-        history_index = len(history)
+            if not history or history[-1] != text:
+                history.append(text)
+            history_index = len(history)
 
-        client.send(text.encode('utf-8'))
-        msg_entry.delete(0, tk.END)
-        chat_area.config(state=tk.NORMAL)
-        chat_area.insert(tk.END, f" Ви: " + text + "")
-        chat_area.yview(tk.END)
-        chat_area.config(state=tk.DISABLED)
+            client.send(text.encode('utf-8'))
+            msg_entry.delete(0, tk.END)
+            chat_area.config(state=tk.NORMAL)
+            chat_area.insert(tk.END, f" Ви: " + text + "")
+            chat_area.yview(tk.END)
+            chat_area.config(state=tk.DISABLED)
+    except ConnectionResetError:
+        root.destroy()
 
 
 def history_up(event):
@@ -85,6 +89,8 @@ def lister_to_server(client):
             if not data:
                 break
             msg = data.decode('utf-8')
+
+            print(msg)
 
             if msg.strip() == "//exit":
                 root.destroy()
